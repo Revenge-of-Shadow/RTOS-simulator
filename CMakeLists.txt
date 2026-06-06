@@ -5,5 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(RTOS-simulator 
+    src/Console.cpp
     src/main.cpp
 )
