@@ -18,18 +18,16 @@ struct Pos{
         return *this;
     }
     Pos operator+(const Pos& other){
-        x += other.x;
-        y += other.y;
-        return *this;
+        return Pos(x + other.x, y + other.y);
     }
     Pos operator-(const Pos& other){
-        x -= other.x;
-        y -= other.y;
-        return *this;
+        return Pos(x - other.x, y - other.y);
     }
 };
 
 void setupConsole();
+void resetConsole();
+void clearConsole();
 void setColour(Colour c);
 void setColourRGB(unsigned int  r, unsigned int  g, unsigned int  b);
 void moveCursor(Pos pos);
@@ -41,3 +39,4 @@ winsize getSize();
 
 void drawLine(Pos p1, Pos p2, const char* ch);
 void drawRect(Pos p1, Pos p2, const char* ch);
+void drawRectFilled(Pos p1, Pos p2, const char* ch);

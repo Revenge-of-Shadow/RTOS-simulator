@@ -1,16 +1,9 @@
 #include "Console.hpp"
+#include <algorithm>
+#include <iostream>
 winsize ws;
+struct termios old_term, new_term;
 
-void setupConsole(){
-    //Some code I copied 
-    //from someone who copied some code
-    //to get unbuffered input on linux
-    struct termios t;
-    tcgetattr(STDIN_FILENO, &t);
-    t.c_lflag &= ~ICANON;
-    tcsetattr(STDIN_FILENO, TCSADRAIN, &t);
-
-}
 winsize updateSize(){
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
     return ws;
@@ -19,6 +12,24 @@ winsize getSize(){
     return ws;
 }
 
+void setupConsole(){
+    //Some code I copied 
+    //from someone who copied some code
+    //to get unbuffered input on linux
+    tcgetattr(STDIN_FILENO, &old_term);
+    new_term = old_term;
+    new_term.c_lflag &= (~ICANON & ~ECHO);
+    tcsetattr(STDIN_FILENO, TCSADRAIN, &new_term);
+
+    clearConsole();
+}
+void resetConsole(){
+    tcsetattr(STDIN_FILENO, TCSADRAIN, &old_term);
+    showCursor(); 
+}
+void clearConsole(){
+    std::cout<<"\033[2J";
+}
 void setColour(Colour c){
     std::cout<<"\033["<<c<<"m";
 }
@@ -54,4 +65,17 @@ void drawRect(Pos p1, Pos p2, const char* ch){
     drawLine(Pos(p2.x, p1.y), Pos(p2.x, p2.y), ch);
     drawLine(Pos(p1.x, p2.y), Pos(p2.x, p2.y), ch);
     drawLine(Pos(p1.x, p1.y), Pos(p1.x, p2.y), ch);
+}
+void drawRectFilled(Pos p1, Pos p2, const char* ch){
+    int x = std::min(p1.x, p2.x);
+    int y = std::min(p1.y, p2.y);
+    int max_x = std::max(p1.x, p2.x); 
+    int max_y = std::max(p1.y, p2.y); 
+
+    for(; x <= max_x; ++x){
+        for(; y <= max_y; ++y){
+            moveCursor(Pos(x, y));
+            std::cout<<ch;
+        }
+    }
 }
