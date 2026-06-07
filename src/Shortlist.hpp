@@ -1,6 +1,7 @@
 #ifndef SHORTLIST
 #define SHORTLIST
 
+#include <iostream>
 template <typename T> class Shortlist {
     int size;
     T *elements;

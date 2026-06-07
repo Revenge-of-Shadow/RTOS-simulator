@@ -5,13 +5,16 @@
 #include "GUI.hpp"
 
 // enum Menu {Idle, Tasks, Buttons, TaskEdit};
-// int option;
+int option;
 
+// void addTask(Shortlist<Task> &tasks){  }
+// void rmTask(Shortlist<Task> &tasks, unsigned int ind){ }
 
 int main(int argc, char *argv[])
 {
     const char *ch = u8"\u2588";
     Shortlist<Task> tasks;
+    option = 0;
     // Menu curr_menu = Idle;
     
     setupConsole();
@@ -23,8 +26,6 @@ int main(int argc, char *argv[])
    
     clearConsole();
     drawBG(ws, ch);
-    drawTaskBar(ws, ch);
-    drawTaskList(ws, tasks);
                 
 
 
@@ -47,10 +48,20 @@ int main(int argc, char *argv[])
                 else    //  Just ESC pressed.
                         break;
             }
+            else switch (keys[0] & ~0b00100000) {// Unsafe uppercase.
+                case 'A':
+                    tasks.add(Task(100, 50, 50));
+                    break;
+                case 'D':
+                    if(tasks.getSize()) tasks.pop(option);
+                    break;
+            }
+            
         }
 
         
         drawTaskBar(ws, ch);
+        drawTaskList(ws, *tasks);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
