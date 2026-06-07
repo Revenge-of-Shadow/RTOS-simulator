@@ -1,48 +1,56 @@
 #include "libs.hpp"
 #include "Console.hpp"
 #include "Shortlist.hpp"
+#include "Task.hpp"
+#include "GUI.hpp"
+
+// enum Menu {Idle, Tasks, Buttons, TaskEdit};
+// int option;
+
 
 int main(int argc, char *argv[])
 {
     const char *ch = u8"\u2588";
+    Shortlist<Task> tasks;
+    // Menu curr_menu = Idle;
     
     setupConsole();
     winsize ws = updateSize();
     hideCursor();
 
+    int queue_len = ws.ws_col-2;
 
-    constexpr int str_len = 3;
-    char c[str_len] = {0};
-
-    do {
-    
-        setColourRGB(0x0A,0x0A,0x0A);   
-        drawRectFilled(Pos(ws.ws_row, ws.ws_col), Pos(1,1), ch);
-        setColourRGB(0xFF,0xFF,0xFF);   
-        drawRect(Pos(ws.ws_row, ws.ws_col), Pos(1,1), ch);
+   
+    clearConsole();
+    drawBG(ws, ch);
+    drawTaskBar(ws, ch);
+    drawTaskList(ws, tasks);
                 
 
+
+    do {
+        
         pollfd fds;
         fds.fd = STDIN_FILENO;
         fds.events = POLLIN;
         nfds_t nfds = 1;
 
         if(poll(&fds,  nfds, 100) > 0){
-            char c[str_len] = {0};
-            read(STDIN_FILENO, &c[0], 1);
-            if(c[0] == 0x1B){
+            char keys[3] = {0};
+
+            read(STDIN_FILENO, &keys[0], 1);
+            if(keys[0] == 0x1B){//  ESC and similar begin on this code.
                 if(poll(&fds,  nfds, 20) > 0){
-                    read(STDIN_FILENO, &c[1], 1);
-                    if(c[1] == 0x5B){}
+                    read(STDIN_FILENO, &keys[1], 1);
+                    if(keys[1] == 0x5B){}
                 }
-                else
-                    break;
+                else    //  Just ESC pressed.
+                        break;
             }
         }
 
         
-        moveCursor(Pos(ws.ws_row/2, ws.ws_col/2));
-        std::cout<<c;
+        drawTaskBar(ws, ch);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
 

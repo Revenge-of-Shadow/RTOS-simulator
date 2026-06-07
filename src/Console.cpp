@@ -36,8 +36,17 @@ void setColour(Colour c){
 void setColourRGB(unsigned int  r, unsigned int  g, unsigned int  b){
     std::cout<<"\033[38;2;"<<r<<";"<<g<<";"<<b<<"m";
 }
+void setColourRGB(unsigned int  rgb){
+    setColourRGB(rgb >> 8*2, rgb >> 8 & 0xFF, rgb & 0xFF);
+}
+void setBackgroundRGB(unsigned int  r, unsigned int  g, unsigned int  b){
+    std::cout<<"\033[48;2;"<<r<<";"<<g<<";"<<b<<"m";
+}
+void setBackgroundRGB(unsigned int  rgb){
+    setBackgroundRGB(rgb >> 8*2, rgb >> 8 & 0xFF, rgb & 0xFF);
+}
 void moveCursor(Pos pos){
-    std::cout<<"\033["<<pos.x<<";"<<pos.y<<"H";
+    std::cout<<"\033["<<pos.y<<";"<<pos.x<<"H";
 }
 void hideCursor(){
     std::cout<<"\033[?25l";
@@ -72,8 +81,8 @@ void drawRectFilled(Pos p1, Pos p2, const char* ch){
     int max_x = std::max(p1.x, p2.x); 
     int max_y = std::max(p1.y, p2.y); 
 
-    for(; x <= max_x; ++x){
-        for(; y <= max_y; ++y){
+    for(; y <= max_y; ++y){
+        for(; x <= max_x; ++x){
             moveCursor(Pos(x, y));
             std::cout<<ch;
         }

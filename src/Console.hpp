@@ -1,3 +1,6 @@
+#ifndef CONSOLE
+#define CONSOLE
+
 #include "libs.hpp"
 
 enum Colour {
@@ -30,6 +33,9 @@ void resetConsole();
 void clearConsole();
 void setColour(Colour c);
 void setColourRGB(unsigned int  r, unsigned int  g, unsigned int  b);
+void setColourRGB(unsigned int rgb);
+void setBackgroundRGB(unsigned int  r, unsigned int  g, unsigned int  b);
+void setBackgroundRGB(unsigned int rgb);
 void moveCursor(Pos pos);
 void hideCursor();
 void showCursor();
@@ -40,3 +46,5 @@ winsize getSize();
 void drawLine(Pos p1, Pos p2, const char* ch);
 void drawRect(Pos p1, Pos p2, const char* ch);
 void drawRectFilled(Pos p1, Pos p2, const char* ch);
+
+#endif // !CONSOLE

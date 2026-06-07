@@ -1,3 +1,6 @@
+#ifndef SHORTLIST
+#define SHORTLIST
+
 template <typename T> class Shortlist {
     int size;
     T *elements;
@@ -82,3 +85,5 @@ public:
         return -1;
     }
 };
+
+#endif // !SHORTLIST
