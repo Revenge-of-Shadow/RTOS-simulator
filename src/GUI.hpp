@@ -23,9 +23,21 @@ void drawBG(winsize ws, const char* ch){
     setBackgroundRGB(0x303030);   
     setColourRGB(0xFFFFFF);
 }
-void drawTaskBar(winsize ws, const char* ch){
+void drawTaskBar(winsize ws, const Shortlist<Task>* tasks, const char* ch){
     setColourRGB(0x101010);
     drawLine(Pos(3,3), Pos(ws.ws_col-2, 3), ch);
+
+    for(int i = 0; i < tasks->getSize(); ++i){
+        setBackgroundRGB((i+1)*(0xFFFFFF/ws.ws_row));
+        if(tasks->peek(i).t > tasks->peek(i).d 
+            || tasks->peek(i).t > tasks->peek(i).p) continue;
+        for(int j = 0; j < (ws.ws_col-4)/(float)tasks->peek(i).p; ++j){
+            moveCursor(Pos(3+j*tasks->peek(i).p, 3));
+            for(int k = 0; k < tasks->peek(i).t && 
+                            j*tasks->peek(i).p + k < ws.ws_col-4; 
+                            ++k) std::cout<<" ";
+        }
+    }
 }
 void drawTaskList(winsize ws, const Shortlist<Task>* tasks, Pos option){
     setBackgroundRGB(0x707070);    
@@ -53,8 +65,7 @@ void drawTaskList(winsize ws, const Shortlist<Task>* tasks, Pos option){
         moveCursor(Pos(3+2, 8+i));
         std::cout<<"Task_"<<i;
         if(tasks->peek(i).t > tasks->peek(i).d 
-            || tasks->peek(i).t > tasks->peek(i).p
-            || tasks->peek(i).d > tasks->peek(i).p){
+            || tasks->peek(i).t > tasks->peek(i).p){
             setColourRGB(0xFF0000);
             std::cout<<"\t(invalid data)";
             setColours(i%2? 0x282828 : 0x202020, 

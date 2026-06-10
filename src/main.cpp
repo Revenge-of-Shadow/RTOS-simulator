@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
         
         hideCursor();
-        drawTaskBar(ws, ch);
+        drawTaskBar(ws, *tasks, ch);
         drawTaskList(ws, *tasks, option);
         moveCursor(Pos(
                     ws.ws_col/2 + ws.ws_col*option.x/8,
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
         setColourRGB(0xFFFFFF);
         showCursor();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(80));
 
     }while (1);
 
