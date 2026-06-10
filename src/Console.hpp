@@ -32,6 +32,7 @@ void setupConsole();
 void resetConsole();
 void clearConsole();
 void setColour(Colour c);
+void setColours(unsigned int bg, unsigned int fg);
 void setColourRGB(unsigned int  r, unsigned int  g, unsigned int  b);
 void setColourRGB(unsigned int rgb);
 void setBackgroundRGB(unsigned int  r, unsigned int  g, unsigned int  b);

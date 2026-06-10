@@ -2,8 +2,6 @@
 #include "Console.hpp"
 #include "Shortlist.hpp"
 #include "Task.hpp"
-#include <chrono>
-#include <thread>
 
 void drawBG(winsize ws, const char* ch){
     //  Initial graphics.
@@ -28,7 +26,7 @@ void drawTaskBar(winsize ws, const char* ch){
     setColourRGB(0x101010);
     drawLine(Pos(3,3), Pos(ws.ws_col-2, 3), ch);
 }
-void drawTaskList(winsize ws, const Shortlist<Task>* tasks){
+void drawTaskList(winsize ws, const Shortlist<Task>* tasks, Pos option){
     setBackgroundRGB(0x707070);    
     setColourRGB(0x000000);
     drawLine(Pos(3, 7), Pos(ws.ws_col-2, 7), " ");
@@ -45,21 +43,34 @@ void drawTaskList(winsize ws, const Shortlist<Task>* tasks){
     std::cout<<"d";
 
     for(int i = 0; i < ws.ws_row-9; ++i){
-        setBackgroundRGB(i%2? 0x282828 : 0x202020);    
-        // setColourRGB(i%2? 0x202020 : 0x606060);
-        setColourRGB((i+1)*(0xFFFFFF/ws.ws_row));
+        setColours(i%2? 0x282828 : 0x202020, 
+            (i+1)*(0xFFFFFF/ws.ws_row));
         drawLine(Pos(3, 8+i), Pos(ws.ws_col-2, 8+i), " ");
          
         if(i >= tasks->getSize()) continue;
-
+    
         moveCursor(Pos(3+2, 8+i));
         std::cout<<"Task_"<<i;
+
+        if(option.y == i && option.x == 0) setColours(0, 0xFFFFFF);
         moveCursor(Pos(ws.ws_col*4/8, 8+i));
         std::cout<<tasks->peek(i).priority;
+        setColours(i%2? 0x282828 : 0x202020, 
+            (i+1)*(0xFFFFFF/ws.ws_row));
+
+        if(option.y == i && option.x == 1) setColours(0, 0xFFFFFF); 
         moveCursor(Pos(ws.ws_col*5/8, 8+i));
         std::cout<<tasks->peek(i).p;
+        setColours(i%2? 0x282828 : 0x202020, 
+            (i+1)*(0xFFFFFF/ws.ws_row));
+
+        if(option.y == i && option.x == 2) setColours(0, 0xFFFFFF); 
         moveCursor(Pos(ws.ws_col*6/8, 8+i));
         std::cout<<tasks->peek(i).t;
+        setColours(i%2? 0x282828 : 0x202020, 
+            (i+1)*(0xFFFFFF/ws.ws_row));
+
+        if(option.y == i && option.x == 3) setColours(0, 0xFFFFFF); 
         moveCursor(Pos(ws.ws_col*7/8, 8+i));
         std::cout<<tasks->peek(i).d;
     }

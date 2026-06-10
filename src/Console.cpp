@@ -33,6 +33,10 @@ void clearConsole(){
 void setColour(Colour c){
     std::cout<<"\033["<<c<<"m";
 }
+void setColours(unsigned int bg, unsigned int fg){
+    setColourRGB(fg >> 8*2, fg >> 8 & 0xFF, fg & 0xFF);
+    setBackgroundRGB(bg >> 8*2, bg >> 8 & 0xFF, bg & 0xFF);
+}
 void setColourRGB(unsigned int  r, unsigned int  g, unsigned int  b){
     std::cout<<"\033[38;2;"<<r<<";"<<g<<";"<<b<<"m";
 }
