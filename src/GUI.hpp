@@ -2,6 +2,7 @@
 #include "Console.hpp"
 #include "Shortlist.hpp"
 #include "Task.hpp"
+#include <iostream>
 
 void drawBG(winsize ws, const char* ch){
     //  Initial graphics.
@@ -51,6 +52,14 @@ void drawTaskList(winsize ws, const Shortlist<Task>* tasks, Pos option){
     
         moveCursor(Pos(3+2, 8+i));
         std::cout<<"Task_"<<i;
+        if(tasks->peek(i).t > tasks->peek(i).d 
+            || tasks->peek(i).t > tasks->peek(i).p
+            || tasks->peek(i).d > tasks->peek(i).p){
+            setColourRGB(0xFF0000);
+            std::cout<<"\t(invalid data)";
+            setColours(i%2? 0x282828 : 0x202020, 
+                (i+1)*(0xFFFFFF/ws.ws_row));
+        }
 
         if(option.y == i && option.x == 0) setColours(0, 0xFFFFFF);
         moveCursor(Pos(ws.ws_col*4/8, 8+i));
