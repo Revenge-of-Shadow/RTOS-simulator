@@ -4,7 +4,6 @@
 #include "Task.hpp"
 #include "GUI.hpp"
 
-// enum Menu {Idle, Tasks, Buttons, TaskEdit};
 
 
 int main(int argc, char *argv[])
@@ -12,21 +11,69 @@ int main(int argc, char *argv[])
     const char *ch = u8"\u2588";
     Shortlist<Task> tasks;
     Pos option(0,0);
-    // Menu curr_menu = Idle;
+
     
     setupConsole();
     winsize ws = updateSize();
 
-    int queue_len = ws.ws_col-2;
+    const int queue_len = ws.ws_col-4;
+    int queue_bits[queue_len];
     int input_val = 0;
+    //  Shortlist<int> free_ids;
+    int free_id = 0;
 
    
     clearConsole();
+    hideCursor();
     drawBG(ws, ch);
-                
-
 
     do {
+        Task curr;
+        Shortlist<Task> stack;
+        
+        for(int i = 0; i < queue_len; ++i){
+            queue_bits[i] = -1;
+
+            for(int t = 0; t < tasks.getSize(); ++t){
+                if(tasks[t].offset == i%tasks[t].p){
+                    //At this moment a task should start.
+                    if(curr.time_started != -1){
+                        //Task present.
+                        if(curr.priority < tasks[t].priority){
+                            //New has lower priority, stash it.
+                            Task pending = tasks[t];
+                            pending.time_started = i;
+                            stack.add(pending);
+                        }
+                        else{
+                            //Current has lower priority, stash it.
+                            stack.add(curr);
+                            curr = tasks[t];
+                            curr.time_started = i;
+                        }
+                    }
+                    else{
+                        curr = tasks[t];
+                        curr.time_started = i;
+                    }
+                }
+           }
+
+           if(curr.time_started != -1){
+                //Task present.
+                queue_bits[i] = curr.id;
+                if(!curr.left){
+                    curr.time_started = -1;
+                    if(stack.getSize()){
+                        int ind = stack.getSize()-1;
+                        for(int s = stack.getSize()-2; s >=0; --s)
+                            if(stack[s].priority < stack[ind].priority)
+                                ind = s;
+                        curr = stack.pop(ind);
+                    }
+                }
+            }
+        }
         
         pollfd fds;
         fds.fd = STDIN_FILENO;
@@ -52,12 +99,12 @@ int main(int argc, char *argv[])
                                     option.y = 0 : ++option.y; 
                                 break;
                             case 'C':
-                                option.x == 3?
+                                option.x == 4?
                                     option.x = 0 : ++option.x; 
                                 break;
                             case 'D':
                                 option.x == 0? 
-                                    option.x = 3: --option.x; 
+                                    option.x = 4: --option.x; 
                                 break;
                         }
                     }
@@ -74,15 +121,19 @@ int main(int argc, char *argv[])
                 
                 switch (option.x) {
                     case 0:
-                        tasks.getPtr(option.y)->priority = input_val;
+                        tasks.getPtr(option.y)->offset = input_val;
                         break;
                     case 1:
-                        tasks.getPtr(option.y)->p = input_val;
+                        tasks.getPtr(option.y)->priority = input_val;
                         break;
                     case 2:
-                        tasks.getPtr(option.y)->t = input_val;
+                        tasks.getPtr(option.y)->p = input_val;
                         break;
                     case 3:
+                        tasks.getPtr(option.y)->t = input_val;
+                        tasks.getPtr(option.y)->left = input_val;
+                        break;
+                    case 4:
                         tasks.getPtr(option.y)->d = input_val;
                         break;
                 }
@@ -90,10 +141,12 @@ int main(int argc, char *argv[])
             else {
                 switch (keys[0] & ~0b00100000) {// Unsafe uppercase.
                     case 'A':
-                        tasks.add(Task(100, 50, 50));
+                        tasks.add(Task(10, 5, 10, free_id));
+                        free_id = tasks.getSize();
                         break;
                     case 'D':
                         if(tasks.getSize()){
+                            free_id = option.y;
                             tasks.pop(option.y);
                             if(option.y) option.y--;
                         }
@@ -103,17 +156,11 @@ int main(int argc, char *argv[])
         }
 
         
-        hideCursor();
-        drawTaskBar(ws, *tasks, ch);
+        drawTaskBar(ws, queue_bits, queue_len, ch);
         drawTaskList(ws, *tasks, option);
-        moveCursor(Pos(
-                    ws.ws_col/2 + ws.ws_col*option.x/8,
-                    9+option.y
-        ));
-        setColourRGB(0xFFFFFF);
-        showCursor();
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(80));
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        drawStats(ws, *tasks);
 
     }while (1);
 
