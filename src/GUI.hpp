@@ -68,6 +68,12 @@ void drawTaskList(winsize ws, const Shortlist<Task>* tasks, Pos option){
             setColours(i%2? 0x282828 : 0x202020, 
                 (i+1)*(0xFFFFFF/ws.ws_row));
         }
+        else if(tasks->peek(i).failed){
+            setColourRGB(0xFF0000);
+            std::cout<<"\t(expired)";
+            setColours(i%2? 0x282828 : 0x202020, 
+                (i+1)*(0xFFFFFF/ws.ws_row));
+        }
 
         if(option.y == i && option.x == 0) setColours(0, 0xFFFFFF);
         moveCursor(Pos(ws.ws_col*3/8, 8+i));

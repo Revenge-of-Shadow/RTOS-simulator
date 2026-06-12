@@ -62,7 +62,13 @@ int main(int argc, char *argv[])
            if(curr.time_started != -1){
                 //Task present.
                 queue_bits[i] = curr.id;
-                if(!curr.left){
+                if(!--curr.left || i-curr.time_started > curr.d){
+                    if(i-curr.time_started > curr.d)
+                        for(int j = 0; j < tasks.getSize(); ++j)
+                            if(tasks[j].id == curr.id){
+                                tasks.getPtr(j)->failed = LATE;
+                                break;
+                            }
                     curr.time_started = -1;
                     if(stack.getSize()){
                         int ind = stack.getSize()-1;
@@ -118,6 +124,8 @@ int main(int argc, char *argv[])
                 if(input_val == -1) input_val = keys[0]-'0';
                 else input_val = input_val*10 + keys[0]-'0';
 
+                tasks.getPtr(option.y)->failed = NONE;
+
                 
                 switch (option.x) {
                     case 0:
@@ -146,7 +154,7 @@ int main(int argc, char *argv[])
                         break;
                     case 'D':
                         if(tasks.getSize()){
-                            free_id = option.y;
+                            free_id = tasks.getSize();
                             tasks.pop(option.y);
                             if(option.y) option.y--;
                         }

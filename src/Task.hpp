@@ -3,6 +3,8 @@
 
 #include "libs.hpp"
 
+enum Failure {NONE, LATE, INVALID};
+
 
 struct Task{
     int id;
@@ -11,9 +13,10 @@ struct Task{
     int offset;
     int time_started;
     int left;
+    Failure failed;
 
     Task(){};
-    Task(int p, int t, int d, int id, int priority = 64, int offset = 0, int time_started = -1):p(p), d(d), t(t), id(id), priority(priority), offset(offset), time_started(time_started), left(t){}
+    Task(int p, int t, int d, int id, int priority = 64, int offset = 0, int time_started = -1):p(p), d(d), t(t), id(id), priority(priority), offset(offset), time_started(time_started), left(t), failed(NONE){}
     Task operator=(const Task &other){
         if(this != &other){
             p = other.p;
@@ -24,6 +27,7 @@ struct Task{
             offset = other.offset;
             time_started = other.time_started;
             left = other.left;
+            failed = other.failed;
         }
         return *this;
     }
